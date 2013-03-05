@@ -1,3 +1,6 @@
 [submodule "imported-cookbooks/nginx"]
 	path = imported-cookbooks/nginx
 	url = git://github.com/opscode-cookbooks/nginx.git
+[submodule "imported-cookbooks/ohai"]
+	path = imported-cookbooks/ohai
+	url = git://github.com/opscode-cookbooks/ohai.git
