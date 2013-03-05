@@ -13,3 +13,6 @@
 [submodule "imported-cookbooks/nodejs"]
 	path = imported-cookbooks/nodejs
 	url = git://github.com/mdxp/nodejs-cookbook.git
+[submodule "imported-cookbooks/yum"]
+	path = imported-cookbooks/yum
+	url = git://github.com/opscode-cookbooks/yum.git
