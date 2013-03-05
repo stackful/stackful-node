@@ -4,3 +4,6 @@
 [submodule "imported-cookbooks/ohai"]
 	path = imported-cookbooks/ohai
 	url = git://github.com/opscode-cookbooks/ohai.git
+[submodule "imported-cookbooks/nodejs-cookbook"]
+	path = imported-cookbooks/nodejs-cookbook
+	url = git://github.com/mdxp/nodejs-cookbook.git
