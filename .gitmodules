@@ -16,3 +16,6 @@
 [submodule "imported-cookbooks/yum"]
 	path = imported-cookbooks/yum
 	url = git://github.com/opscode-cookbooks/yum.git
+[submodule "imported-cookbooks/mongodb"]
+	path = imported-cookbooks/mongodb
+	url = git://github.com/edelight/chef-mongodb.git
