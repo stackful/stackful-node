@@ -17,7 +17,10 @@ default_attributes(
 
 
 run_list [
-  'recipe[nginx::default]',
-  'recipe[nodejs::default]',
+  "recipe[nginx::default]",
+  "recipe[nodejs::default]",
+  "recipe[mongodb::10gen_repo]",
+  "recipe[mongodb::default]",
+
   #'recipe[stackful-node::default]'
 ]
