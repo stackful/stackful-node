@@ -10,3 +10,6 @@
 [submodule "imported-cookbooks/build-essential"]
 	path = imported-cookbooks/build-essential
 	url = git://github.com/opscode-cookbooks/build-essential.git
+[submodule "imported-cookbooks/nodejs"]
+	path = imported-cookbooks/nodejs
+	url = git://github.com/mdxp/nodejs-cookbook.git
