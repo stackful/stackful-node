@@ -12,6 +12,9 @@ default_attributes(
   },
     "nginx" => {
     "install_method" => "package",
+  },
+    "mongodb" => {
+    "bind_ip" => "127.0.0.1"
   }
 )
 
