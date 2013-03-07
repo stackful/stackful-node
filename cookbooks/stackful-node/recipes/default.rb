@@ -1,7 +1,9 @@
-app_home = node["stackful-node"]["app-home"]
-app_name = node["stackful-node"]["app-name"]
-node_user = node["stackful-node"]["user"]
-node_group = node["stackful-node"]["group"]
+settings = node["stackful-node"]
+
+app_home = settings["app-home"]
+app_name = settings["app-name"]
+node_user = settings["user"]
+node_group = settings["group"]
 
 group node_group
 user node_user do
