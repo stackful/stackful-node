@@ -1,0 +1,11 @@
+description "node-web server"
+
+start on runlevel [2345]
+respawn
+
+setuid <%= node['stackful-node']['user'] %>
+setgid <%= node['stackful-node']['group'] %>
+
+env PORT=<%= node['stackful-node']['app-port'] %>
+chdir <%= node['stackful-node']['app-home'] %>
+exec node app.js

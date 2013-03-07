@@ -1,0 +1,23 @@
+upstream <%= node["stackful-node"]["app-name"] %> {
+  server localhost:<%= node["stackful-node"]["app-port"] %>;
+}
+
+server {
+  listen 80;
+  server_name <%= node["stackful-node"]["app-name"] %>;
+  <% if node["stackful-node"]["ssl-cert"] %>
+  ssl on;
+  ssl_certificate <%= node["stackful-node"]["ssl-cert"] %>;
+  ssl_certificate_key <%= @node["stackful-node"]["ssl-key"] %>;
+  <% end %>
+
+  <% ["public", "static"].each do |static_dir| %>
+  location /<%= static_dir %> {
+    root <%= node["stackful-node"]["app-home"] %>;
+  }
+  <% end %>
+
+  location / {
+    proxy_pass http://<%= node["stackful-node"]["app-name"] %>;
+  }
+}
