@@ -19,3 +19,6 @@
 [submodule "imported-cookbooks/mongodb"]
 	path = imported-cookbooks/mongodb
 	url = git://github.com/hdeshev/chef-mongodb.git
+[submodule "imported-cookbooks/openssl"]
+	path = imported-cookbooks/openssl
+	url = git://github.com/opscode-cookbooks/openssl.git
