@@ -6,3 +6,6 @@ default['stackful-node']['ssl-key'] = nil
 default['stackful-node']['app-port'] = 3000
 default['stackful-node']['user'] = 'nodejs'
 default['stackful-node']['group'] = 'nodejs'
+
+default['stackful-node']['db-user'] = 'node-web'
+default['stackful-node']['db-password'] = nil

@@ -7,5 +7,7 @@ setuid <%= node['stackful-node']['user'] %>
 setgid <%= node['stackful-node']['group'] %>
 
 env PORT=<%= node['stackful-node']['app-port'] %>
+env MONGO_URL=mongodb://<%= node['stackful-node']['db-user'] %>:<%= node['stackful-node']['db-password'] %>@localhost/<%= node['stackful-node']['app-name'] %>
+
 chdir <%= node['stackful-node']['app-home'] %>
 exec node app.js
