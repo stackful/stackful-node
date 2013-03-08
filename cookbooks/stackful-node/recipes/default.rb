@@ -6,6 +6,7 @@ app_home = settings["app-home"]
 app_name = settings["app-name"]
 node_user = settings["user"]
 node_group = settings["group"]
+mongo_user = settings["db-user"]
 upstart_config = "/etc/init/node-web.conf"
 
 ::Chef::Recipe.send(:include, ::Opscode::OpenSSL::Password)
@@ -17,7 +18,23 @@ puts "NEW MONGODB PASSWORD: " + generated_mongodb_password
 ruby_block "generate_new_db_password" do
   block do
     node.set_unless["stackful-node"]["db-password"] = generated_mongodb_password
-    puts "MONGO PASSWORD: " + node["stackful-node"]["db-password"]
+  end
+  not_if { ::File.exists?(upstart_config) }
+end
+
+# don't use execute, as it seems to use attributes set at recipe compile time
+# and we fetch the db-password later on
+ruby_block "create_mongodb_user" do
+  block do
+    command = <<EOF
+  mongo localhost/#{app_name} --eval "
+    if (db.system.users.find({'user': '#{mongo_user}'}).length() == 0) {
+      db.addUser('#{mongo_user}', '#{node['stackful-node']['db-password']}')
+    }
+  "
+EOF
+
+    system command
   end
   not_if { ::File.exists?(upstart_config) }
 end
@@ -27,7 +44,6 @@ ruby_block "read_current_db_password" do
     upstart_config_text = ::File.read(upstart_config)
     m = upstart_config_text.match(/MONGO_URL=mongodb:\/\/(?<user>[^:]+):(?<password>[^@]+).*/)
     node.set_unless["stackful-node"]["db-password"] = m["password"]
-    puts "MONGO PASSWORD: " + node["stackful-node"]["db-password"]
   end
   only_if { ::File.exists?(upstart_config) }
 end
