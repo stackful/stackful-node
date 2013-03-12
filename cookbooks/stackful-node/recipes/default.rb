@@ -54,6 +54,7 @@ user node_user do
 end
 
 remote_directory app_home do
+  source "node_web"
   owner node_user
   group node_group
   files_owner node_user
