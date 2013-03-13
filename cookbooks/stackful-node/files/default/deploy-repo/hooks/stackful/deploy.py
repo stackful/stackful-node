@@ -31,7 +31,9 @@ class GitDeploy(object):
         self.app_run("git reset --hard FETCH_HEAD")
 
     def update_npm(self):
-        self.app_run("npm install || true")
+        # Pass the HOME folder so that npm writes its .npm dir somewhere it can
+        # Ignore errors
+        self.app_run("HOME='{}' npm install || true".format(self.app_dir))
 
     def restart(self):
         print("Restarting: {} ...".format(self.app_name))
