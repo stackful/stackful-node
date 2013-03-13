@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import sys, os, subprocess
+import json
+
+if len(sys.argv) != 2:
+    print("./run <git deploy user>")
+    exit(-1)
+
+stack_dir = os.path.dirname(os.path.abspath(__file__))
+deploy_user = sys.argv[1].strip()
+
+with open(os.path.join(stack_dir, "stack.json"), "r") as base_json:
+    attributes_json = json.load(base_json)
+
+if not "stackful-node" in attributes_json:
+    attributes_json["stackful-node"] = {}
+
+attributes_json["stackful-node"]["deploy-user"] = deploy_user
+
+with open(os.path.join(stack_dir, "params.json"), "w") as params_json:
+        json.dump(attributes_json, params_json)
+
+
+chef_cmd = "chef-solo -c '{0}/stack.rb' -j '{0}/params.json'".format(stack_dir)
+subprocess.call(chef_cmd, shell=True)
