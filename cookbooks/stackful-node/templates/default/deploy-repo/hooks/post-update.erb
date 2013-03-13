@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import sys
+import os
+import subprocess
+from stackful import deploy
+
+
+GIT_DIR = os.path.abspath(os.getenv("GIT_DIR"))
+APP_DEPLOY_DIR = "<%= node["stackful-node"]["app-home"] %>"
+APP_USER = "<%= node["stackful-node"]["user"] %>"
+APP_NAME = "<%= node["stackful-node"]["app-name"] %>"
+
+branch = sys.argv[1].replace("refs/heads/", "")
+if branch != "master":
+    print("Not deploying from branches other than 'master'. Exiting...")
+
+
+os.unsetenv("GIT_DIR")
+deploy_cmd = "python hooks/stackful/deploy.py '{}' '{}' '{}' '{}'".format(
+        APP_USER, APP_NAME, GIT_DIR, APP_DEPLOY_DIR)
+deploy.run(deploy_cmd)

@@ -9,3 +9,5 @@ default['stackful-node']['group'] = 'nodejs'
 
 default['stackful-node']['db-user'] = 'node-web'
 default['stackful-node']['db-password'] = nil
+
+default['stackful-node']['deploy-user'] = nil
