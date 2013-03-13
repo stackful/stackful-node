@@ -30,6 +30,9 @@ class GitDeploy(object):
         self.app_run("git fetch -f origin master")
         self.app_run("git reset --hard FETCH_HEAD")
 
+    def update_npm(self):
+        self.app_run("npm install || true")
+
     def restart(self):
         print("Restarting: {} ...".format(self.app_name))
         # Restart our Upstart job
@@ -41,6 +44,7 @@ class GitDeploy(object):
     def deploy(self):
         self.ensure_repo()
         self.pull_latest()
+        self.update_npm()
         self.restart()
 
 
