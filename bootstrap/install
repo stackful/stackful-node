@@ -2,9 +2,12 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import sys, os
+import sys
 import dialog
+import subprocess
 
+
+# Go on with Git deployment
 d = dialog.Dialog("Stackful.io -- Node.js")
 welcome_text = """
 Welcome to the Stackful.io Node.js stack installer!
@@ -70,6 +73,7 @@ d.msg_box(ssh_key_text, " Git Deployment ", width=70, height=20)
 
 git_key = read_nonempty(None, None, " Git Deployment -- SSH Public Key ", "Public key required.", "edit_box")
 
-print("user: " + git_user)
-print("password: " + git_password)
-print("key: " + git_key)
+create_user_cmd = 'useradd --create-home --shell=/bin/bash {user}"'.format(user=git_user)
+subprocess.check_call(create_user_cmd, shell=True)
+set_password_cmd = 'chpasswd <<< "{user}:{password}"'.format(user=git_user, password=git_password)
+subprocess.check_call(set_password_cmd, shell=True)
