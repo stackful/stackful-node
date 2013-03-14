@@ -10,7 +10,7 @@ if [ "$DISTRIB_ID" != "Ubuntu" -o "$DISTRIB_RELEASE" != "12.04" ] ; then
 fi
 
 echo "Installing prerequisite packages..."
-apt-get install dialog git
+DEBIAN_FRONTEND=noninteractive apt-get install --yes dialog git
 
 STACK_REPO="git@bitbucket.org:hdeshev/stackful-node.git"
 STACK_SOURCE="/tmp/stackful-node"
