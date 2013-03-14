@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -o errexit
+
 . /etc/lsb-release
 
 echo "Checking if OS/Distro is supported..."
@@ -18,9 +20,14 @@ STACK_SOURCE="/tmp/stackful-node"
 echo "Fetching stack files..."
 git clone "$STACK_REPO" "$STACK_SOURCE"
 cd "$STACK_SOURCE"
+git submodule update --init
 
 echo "Setting up Git deploy user..."
 ./bootstrap/install-git-repo
+
+
+echo "Installing Chef Solo..."
+curl -L https://www.opscode.com/chef/install.sh | bash
 
 echo "Finishing stack installation..."
 GIT_USER=$(cat bootstrap/git_user.txt)
