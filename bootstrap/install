@@ -24,4 +24,4 @@ echo "Setting up Git deploy user..."
 
 echo "Finishing stack installation..."
 GIT_USER=$(cat bootstrap/git_user.txt)
-./run $(GIT_USER)
+./run $GIT_USER
