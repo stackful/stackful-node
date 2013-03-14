@@ -1,0 +1,75 @@
+#!/usr/bin/env python
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import sys, os
+import dialog
+
+d = dialog.Dialog("Stackful.io -- Node.js")
+welcome_text = """
+Welcome to the Stackful.io Node.js stack installer!
+
+This installer will walk you through creating a user account for Git deployment and will then start the Stack installation which will set your server up with:
+
+* Nginx as a HTTP front handler
+* MongoDB as a database server
+* A Node.js application server process monitored by Upstart.
+
+NOTE: The installer requires Ubuntu 12.04. It is not guaranteed to run on other distros yet.
+""".strip()
+
+d.msg_box(welcome_text, " Welcome ", width=70, height=20)
+
+git_user_text = """
+We will now create a system user that will be used to perform Git deployments.
+
+Your Git repository will be hosted in the user home directory and an update hook will take care of redeploying your application on every code push.
+
+We will be setting up a SSH key-based authentication, so that you do not have to type your password every time. We will also set a password for that account, so that you can log in if something goes wrong.
+""".strip()
+d.msg_box(git_user_text, " Git Deployment ", width=70, height=20)
+
+result = 255
+git_user, git_password, git_key = "", "", ""
+
+
+def read_nonempty(prompt, value, title, error_message, input_type):
+    while True:
+        if input_type == "input_box":
+            result, input_value = d.input_box(prompt, value, title)
+        elif input_type == "password_box":
+            result, input_value = d.password_box(prompt, value, title)
+        elif input_type == "edit_box":
+            result, input_value = d.edit_box(None, title)
+        else:
+            raise ValueError("Illegal input_type.")
+
+        if result != dialog.OK:
+            print("Aborting...")
+            sys.exit()
+
+        if input_type != "password_box":
+            input_value = input_value.strip()
+
+        if not input_value:
+            d.msg_box(error_message)
+        else:
+            return input_value
+
+git_user = read_nonempty("Git user name:", "git", " Git Deployment ", "User required.", "input_box")
+git_password = read_nonempty("Git password:", "", " Git Deployment ", "Password required.", "password_box")
+
+ssh_key_text = r"""
+Time to set up key-based SSH authentication for your account that will be used to push changes to the Git repository.
+
+All we need is your SSH public key. If you are not sure what that is or do not yet have one, please check GitHub's walkthrough at:
+
+https://help.github.com/articles/generating-ssh-keys
+""".strip()
+d.msg_box(ssh_key_text, " Git Deployment ", width=70, height=20)
+
+git_key = read_nonempty(None, None, " Git Deployment -- SSH Public Key ", "Public key required.", "edit_box")
+
+print("user: " + git_user)
+print("password: " + git_password)
+print("key: " + git_key)
