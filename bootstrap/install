@@ -1,0 +1,27 @@
+#!/bin/sh
+
+. /etc/lsb-release
+
+echo "Checking if OS/Distro is supported..."
+
+if [ "$DISTRIB_ID" != "Ubuntu" -o "$DISTRIB_RELEASE" != "12.04" ] ; then
+    echo "Unsupported OS/distro. Supported: Ubuntu 12.04"
+    exit
+fi
+
+echo "Installing prerequisite packages..."
+apt-get install dialog git
+
+STACK_REPO="git@bitbucket.org:hdeshev/stackful-node.git"
+STACK_SOURCE="/tmp/stackful-node"
+
+echo "Fetching stack files..."
+git clone "$STACK_REPO" "$STACK_SOURCE"
+cd "$STACK_SOURCE"
+
+echo "Setting up Git deploy user..."
+./bootstrap/install-git-repo
+
+echo "Finishing stack installation..."
+GIT_USER=$(cat bootstrap/git_user.txt)
+./run $(GIT_USER)
