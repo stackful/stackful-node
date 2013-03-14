@@ -2,11 +2,12 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import sys
+import sys, os
 import dialog
 import subprocess
 
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
 # Go on with Git deployment
 d = dialog.Dialog("Stackful.io -- Node.js")
 welcome_text = """
@@ -77,3 +78,6 @@ create_user_cmd = 'useradd --create-home --shell=/bin/bash {user}"'.format(user=
 subprocess.check_call(create_user_cmd, shell=True)
 set_password_cmd = 'chpasswd <<< "{user}:{password}"'.format(user=git_user, password=git_password)
 subprocess.check_call(set_password_cmd, shell=True)
+
+with open(os.path.join(script_dir, "git_user.txt"), "w") as git_user_file:
+    git_user_file.write(git_user)
