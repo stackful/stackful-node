@@ -26,6 +26,7 @@ STACK_REPO="https://github.com/stackful/stackful-node.git"
 STACK_SOURCE="/tmp/stackful-node"
 
 message "Fetching stack files from $STACK_REPO ..."
+rm -rf "$STACK_SOURCE"
 git clone "$STACK_REPO" "$STACK_SOURCE"
 cd "$STACK_SOURCE"
 git submodule update --init
