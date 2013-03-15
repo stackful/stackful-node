@@ -11,7 +11,8 @@ default_attributes(
     "version" => "0.10.0"
   },
     "nginx" => {
-    "install_method" => "package",
+    "install_method" => "source",
+    "init_style" => "init",
     "version" => "1.3.14"
   },
     "mongodb" => {
