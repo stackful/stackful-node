@@ -14,7 +14,7 @@ fi
 echo "Installing prerequisite packages..."
 DEBIAN_FRONTEND=noninteractive apt-get install --yes dialog git
 
-STACK_REPO="git@bitbucket.org:hdeshev/stackful-node.git"
+STACK_REPO="git@github.com:stackful/stackful-node.git"
 STACK_SOURCE="/tmp/stackful-node"
 
 echo "Fetching stack files..."
