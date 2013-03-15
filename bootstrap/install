@@ -4,31 +4,42 @@ set -o errexit
 
 . /etc/lsb-release
 
-echo "Checking if OS/Distro is supported..."
+function message {
+    msg=$1
+    echo "$msg"
+    echo "$msg" >> ~/stackful-node-summary.txt
+}
+
+rm -f ~/stackful-node-summary.txt
+
+message "Checking if OS/Distro is supported..."
 
 if [ "$DISTRIB_ID" != "Ubuntu" -o "$DISTRIB_RELEASE" != "12.04" ] ; then
-    echo "Unsupported OS/distro. Supported: Ubuntu 12.04"
+    message "Unsupported OS/distro. Supported: Ubuntu 12.04"
     exit
 fi
 
-echo "Installing prerequisite packages..."
+message "Installing prerequisite packages..."
 DEBIAN_FRONTEND=noninteractive apt-get install --yes dialog git
 
 STACK_REPO="https://github.com/stackful/stackful-node.git"
 STACK_SOURCE="/tmp/stackful-node"
 
-echo "Fetching stack files..."
+message "Fetching stack files from $STACK_REPO ..."
 git clone "$STACK_REPO" "$STACK_SOURCE"
 cd "$STACK_SOURCE"
 git submodule update --init
 
-echo "Setting up Git deploy user..."
+message "Setting up Git deploy user..."
 ./bootstrap/install-git-repo
 
 
-echo "Installing Chef Solo..."
+message "Installing Opscode Chef..."
 curl -L https://www.opscode.com/chef/install.sh | bash
 
-echo "Finishing stack installation..."
+message "Finishing stack installation..."
 GIT_USER=$(cat bootstrap/git_user.txt)
 ./run $GIT_USER
+
+echo "Installation summary (also saved to ~/stackful-node-summary.txt):"
+cat ~/stackful-node-summary.txt
