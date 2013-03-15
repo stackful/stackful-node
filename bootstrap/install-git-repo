@@ -50,7 +50,7 @@ def read_nonempty(prompt, value, title, error_message, input_type):
 
         if result != dialog.OK:
             if d.yesno_box("Are you sure you want to abort the installation?")[0] == dialog.OK:
-            sys.exit()
+                sys.exit()
 
         if input_type != "password_box":
             input_value = input_value.strip()
