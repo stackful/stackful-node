@@ -22,3 +22,6 @@
 [submodule "imported-cookbooks/openssl"]
 	path = imported-cookbooks/openssl
 	url = git://github.com/opscode-cookbooks/openssl.git
+[submodule "imported-cookbooks/runit"]
+	path = imported-cookbooks/runit
+	url = git@github.com:opscode-cookbooks/runit.git
