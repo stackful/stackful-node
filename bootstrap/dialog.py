@@ -17,7 +17,7 @@ class Dialog(object):
         self.backtitle = backtitle
 
     def __run(self, cmd_args):
-        cmd = """dialog --backtitle "{}" {}""".format(escape(self.backtitle), cmd_args)
+        cmd = """dialog --no-mouse --backtitle "{}" {}""".format(escape(self.backtitle), cmd_args)
         p = subprocess.Popen(cmd, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
         exit_code = p.returncode
