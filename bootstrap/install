@@ -41,5 +41,5 @@ message "Finishing stack installation..."
 GIT_USER=$(cat bootstrap/git_user.txt)
 ./run $GIT_USER
 
-echo "Installation summary (also saved to ~/stackful-node-summary.txt):"
+echo "INSTALLATION SUMMARY (also saved to ~/stackful-node-summary.txt):\n"
 cat ~/stackful-node-summary.txt

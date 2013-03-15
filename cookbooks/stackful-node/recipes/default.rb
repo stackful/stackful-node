@@ -123,6 +123,7 @@ ruby_block "write git repo summary" do
 
     File.open(summary_file, "a+") do |f|
       f.puts <<EOF
+
 Git Configuration
 =================
 
