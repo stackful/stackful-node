@@ -82,5 +82,17 @@ chpasswd.stdin.write(password_input)
 chpasswd.stdin.close()
 chpasswd.communicate()
 
+ssh_auth_commands = """
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+echo "{key}" > ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+""".format(key=git_key)
+
+git_user_shell = subprocess.Popen("sudo -u {} sh".format(git_user), stdin=subprocess.PIPE, shell=True)
+git_user_shell.stdin.write(ssh_auth_commands)
+git_user_shell.stdin.close()
+git_user_shell.communicate()
+
 with open(os.path.join(script_dir, "git_user.txt"), "w") as git_user_file:
     git_user_file.write(git_user)
