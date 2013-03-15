@@ -20,6 +20,7 @@ if [ "$DISTRIB_ID" != "Ubuntu" -o "$DISTRIB_RELEASE" != "12.04" ] ; then
 fi
 
 message "Installing prerequisite packages..."
+DEBIAN_FRONTEND=noninteractive apt-get update --yes
 DEBIAN_FRONTEND=noninteractive apt-get install --yes dialog git
 
 STACK_REPO="https://github.com/stackful/stackful-node.git"
