@@ -33,6 +33,11 @@ class Dialog(object):
             title=escape(title), text=escape(prompt), width=width, height=height, value=value)
         return self.__run(dialog_args)
 
+    def yesno_box(self, text, title="", width=50, height=10):
+        dialog_args = """--title "{title}" --yesno "{text}" {height} {width}""".format(
+            title=escape(title), text=escape(text), width=width, height=height)
+        return self.__run(dialog_args)
+
     def password_box(self, prompt, value="", title="", width=50, height=10):
         dialog_args = """--title "{title}" --passwordbox "{text}" {height} {width} {value}""".format(
             title=escape(title), text=escape(prompt), width=width, height=height, value=value)
