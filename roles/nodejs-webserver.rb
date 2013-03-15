@@ -7,8 +7,8 @@ description 'Stackful.io Node.js web app server'
 
 default_attributes(
     "nodejs" => {
-    "install_method" => "package",
-    "version" => "0.8.22"
+    "install_method" => "source",
+    "version" => "0.10.0"
   },
     "nginx" => {
     "install_method" => "package",
