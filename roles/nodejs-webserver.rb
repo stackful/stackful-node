@@ -11,7 +11,8 @@ default_attributes(
     "version" => "0.10.0"
   },
     "nginx" => {
-    "install_method" => "package",
+    "install_method" => "source",
+    "version" => "1.3.14"
   },
     "mongodb" => {
     "bind_ip" => "127.0.0.1"
