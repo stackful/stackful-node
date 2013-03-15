@@ -111,6 +111,48 @@ execute "mkdir -p #{deploy_repo}" do
   not_if { File.exists?(deploy_repo) }
 end
 
+ruby_block "write git repo summary" do
+  block do
+    home = ENV["HOME"]
+    summary_file = File.join(home, "stackful-node-summary.txt")
+
+    require 'net/http'
+    external_ip = Net::HTTP.get(URI.parse('http://icanhazip.com')).strip
+
+    git_url = "#{deploy_user}@#{external_ip}:#{app_name}.git"
+
+    File.open(summary_file, "a+") do |f|
+      f.puts <<EOF
+Git Configuration
+=================
+
+Your deployment repository is available at:
+
+    #{git_url}
+
+Configure it as a remote on your current Git repository with a command like:
+
+    git remote add stackful #{git_url}
+
+And then, when you want to deploy your code to the server, just push to the master branch:
+
+    git push stackful master
+
+
+HTTP Configuration
+==================
+
+Your web server is listening and has a demo web app configured at:
+
+    http://#{external_ip}
+
+The application will be automatically restarted on every push deployment and your changes will immediately go live.
+EOF
+    end
+  end
+  not_if { File.exists?("#{deploy_repo}/refs") }
+end
+
 execute "git init --bare" do
   user deploy_user
   group deploy_user
