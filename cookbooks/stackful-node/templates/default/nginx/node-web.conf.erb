@@ -2,6 +2,13 @@ upstream <%= node["stackful-node"]["app-name"] %> {
   server localhost:<%= node["stackful-node"]["app-port"] %>;
 }
 
+# Websocket Upgrade header detection.
+# See http://nginx.org/en/docs/http/websocket.html for details
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
 server {
   listen 80;
   server_name <%= node["stackful-node"]["app-name"] %>;
@@ -18,6 +25,12 @@ server {
   <% end %>
 
   location / {
+    proxy_http_version 1.1;
+
+    # Pass WebSocket upgrade header to our backend app.
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+
     proxy_pass http://<%= node["stackful-node"]["app-name"] %>;
   }
 }
