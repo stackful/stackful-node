@@ -1,47 +1,63 @@
-#!/bin/sh
+#!/usr/bin/env python
 
-set -o errexit
+from __future__ import absolute_import, division, print_function, unicode_literals
 
-. /etc/lsb-release
-
-message() {
-    msg=$1
-    echo "$msg"
-    echo "$msg" >> ~/stackful-node-summary.txt
-}
-
-rm -f ~/stackful-node-summary.txt
-
-message "Checking if OS/Distro is supported..."
-
-if [ "$DISTRIB_ID" != "Ubuntu" -o "$DISTRIB_RELEASE" != "12.04" ] ; then
-    message "Unsupported OS/distro. Supported: Ubuntu 12.04"
-    exit
-fi
-
-message "Installing prerequisite packages..."
-DEBIAN_FRONTEND=noninteractive apt-get update --yes
-DEBIAN_FRONTEND=noninteractive apt-get install --yes dialog git
-
-STACK_REPO="https://github.com/stackful/stackful-node.git"
-STACK_SOURCE="/tmp/stackful-node"
-
-message "Fetching stack files from $STACK_REPO ..."
-rm -rf "$STACK_SOURCE"
-git clone "$STACK_REPO" "$STACK_SOURCE"
-cd "$STACK_SOURCE"
-git submodule update --init
-
-message "Setting up Git deploy user..."
-./bootstrap/install-git-repo
+import sys, os, platform
+import subprocess
+import functools
 
 
-message "Installing Opscode Chef..."
-curl -L https://www.opscode.com/chef/install.sh | bash
+# Easy on the wrists
+def run(cmd, cwd=None):
+    return subprocess.check_call(cmd, cwd=cwd, shell=True)
 
-message "Finishing stack installation..."
-GIT_USER=$(cat bootstrap/git_user.txt)
-./run $GIT_USER
 
-echo "INSTALLATION SUMMARY (also saved to ~/stackful-node-summary.txt):\n"
-cat ~/stackful-node-summary.txt
+def read_text(file_path):
+    with open(file_path, "r") as f:
+        return f.read()
+
+
+def message(msg):
+    print(msg)
+    with open(summary_file, "a+") as f:
+        f.write(msg)
+
+
+user_home = os.getenv("HOME")
+summary_file = os.path.join(user_home, "stackful-node-summary.txt")
+os.unlink(summary_file)
+
+message("Checking if OS/Distro is supported...")
+distro, version, _ = platform.dist()
+if distro != "Ubuntu" or version != "12.04":
+    message("Unsupported OS/distro. Supported: Ubuntu 12.04")
+    sys.exit(255)
+
+message("Installing prerequisite packages...")
+run("DEBIAN_FRONTEND=noninteractive apt-get update --yes")
+run("DEBIAN_FRONTEND=noninteractive apt-get install --yes dialog git")
+
+stack_repo = "https://github.com/stackful/stackful-node.git"
+stack_source = "/tmp/stackful-node"
+
+message("Fetching stack files from {} ...".format(stack_repo))
+run("rm -rf '{}'".format(stack_source))
+run("git clone '{repo}' '{dir}'".format(repo=stack_repo, dir=stack_source))
+
+run_stack = functools.partial(run, cwd=stack_source)
+run_stack("git submodule update --init")
+
+message("Setting up Git deploy user...")
+run_stack("./bootstrap/install-git-repo")
+
+
+message("Installing Opscode Chef...")
+run("curl -L https://www.opscode.com/chef/install.sh | bash")
+
+message("Finishing stack installation...")
+git_user = read_text(os.path.join(stack_source, "bootstrap", "git_user.txt")).strip()
+
+run_stack("./run '{}'".format(git_user))
+
+print("INSTALLATION SUMMARY (also saved to ~/stackful-node-summary.txt):\n")
+run("cat ~/stackful-node-summary.txt")
