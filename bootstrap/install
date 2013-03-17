@@ -30,7 +30,7 @@ os.unlink(summary_file)
 
 # reset stack configuration
 config_dir = os.path.join("/etc", "stackful")
-run("mkdir -p '{}'".format(config_dir)
+run("mkdir -p '{}'".format(config_dir))
 config_file = os.path.join(config_dir, "stackful-node.json")
 os.unlink(config_file)
 
