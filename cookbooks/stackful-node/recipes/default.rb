@@ -106,8 +106,6 @@ cookbook_file "/usr/local/bin/stackful-run-web" do
 
   owner "root"
   group "root"
-  files_owner "root"
-  files_group "root"
 end
 
 template upstart_config do
