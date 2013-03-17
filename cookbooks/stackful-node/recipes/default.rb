@@ -74,7 +74,7 @@ ruby_block "write stack config" do
     config["web"]["environment"] ||= {}
     env = config["web"]["environment"]
 
-    mongo_url = "mongodb://#{mongo_user}:#{node['stackful-node']['db-password']}@localhost/#{app-name}"
+    mongo_url = "mongodb://#{mongo_user}:#{node['stackful-node']['db-password']}@localhost/#{app_name}"
     env["MONGO_URL"] = mongo_url
 
     File.open(config_file, "w") do |cf|
