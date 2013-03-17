@@ -181,7 +181,6 @@ The application will be automatically restarted on every push deployment and you
 EOF
     end
   end
-  not_if { File.exists?("#{deploy_repo}/refs") }
 end
 
 execute "git init --bare" do
