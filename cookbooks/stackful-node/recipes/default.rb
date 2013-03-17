@@ -65,7 +65,7 @@ ruby_block "write stack config" do
     config = {}
     begin
       File.open(config_file, "r") do |cf|
-        config = JSON.Parse
+        config = JSON.parse(cf.read)
       end
     rescue Errno::ENOENT
     end
