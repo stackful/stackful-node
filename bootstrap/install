@@ -59,8 +59,17 @@ message("Setting up Git deploy user...")
 run_stack("./bootstrap/install-git-repo")
 
 
-message("Installing Opscode Chef...")
-run("curl -L https://www.opscode.com/chef/install.sh | bash")
+chef_installed = False
+try:
+    chef_location = subprocess.check_output("which chef-solo", shell=True)
+    message("Opscode Chef already installed at '{}'".format(chef_location.strip()))
+    chef_installed = True
+except subprocess.CalledProcessError:
+    pass
+
+if not chef_installed:
+    message("Installing Opscode Chef...")
+    run("curl -L https://www.opscode.com/chef/install.sh | bash")
 
 message("Finishing stack installation...")
 run_stack("./run")
