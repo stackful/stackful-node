@@ -5,9 +5,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import sys, os
 import dialog
 import subprocess
+import json
 
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
+config_file = os.path.join("/etc", "stackful", "stackful-node.json")
 # Go on with Git deployment
 d = dialog.Dialog("Stackful.io -- Node.js")
 welcome_text = """
@@ -94,5 +96,13 @@ git_user_shell.stdin.write(ssh_auth_commands)
 git_user_shell.stdin.close()
 git_user_shell.communicate()
 
-with open(os.path.join(script_dir, "git_user.txt"), "w") as git_user_file:
-    git_user_file.write(git_user)
+try:
+    with open(config_file, "r") as cf:
+        config = json.load(cf)
+except IOError:
+    config = {}
+
+config["deploy_user"] = git_user
+
+with open(config_file, "w") as cf:
+    cf.write(git_user)

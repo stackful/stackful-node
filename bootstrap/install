@@ -23,9 +23,16 @@ def message(msg):
         f.write(msg)
 
 
+#reset summary file
 user_home = os.getenv("HOME")
 summary_file = os.path.join(user_home, "stackful-node-summary.txt")
 os.unlink(summary_file)
+
+# reset stack configuration
+config_dir = os.path.join("/etc", "stackful")
+run("mkdir -p '{}'".format(config_dir)
+config_file = os.path.join(config_dir, "stackful-node.json")
+os.unlink(config_file)
 
 message("Checking if OS/Distro is supported...")
 distro, version, _ = platform.dist()
@@ -55,9 +62,7 @@ message("Installing Opscode Chef...")
 run("curl -L https://www.opscode.com/chef/install.sh | bash")
 
 message("Finishing stack installation...")
-git_user = read_text(os.path.join(stack_source, "bootstrap", "git_user.txt")).strip()
-
-run_stack("./run '{}'".format(git_user))
+run_stack("./run")
 
 print("INSTALLATION SUMMARY (also saved to ~/stackful-node-summary.txt):\n")
 run("cat ~/stackful-node-summary.txt")

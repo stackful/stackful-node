@@ -5,12 +5,17 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import sys, os, subprocess
 import json
 
-if len(sys.argv) != 2:
-    print("./run <git deploy user>")
+config_file = os.path.join("/etc", "stackful", "stackful-node.json")
+
+try:
+    with open(config_file, "r") as cf:
+        config = json.load(cf)
+except IOError:
+    print("Couldn't load config file: {}".format(config_file))
     exit(-1)
 
 stack_dir = os.path.dirname(os.path.abspath(__file__))
-deploy_user = sys.argv[1].strip()
+deploy_user = config["deploy_user"]
 
 with open(os.path.join(stack_dir, "stack.json"), "r") as base_json:
     attributes_json = json.load(base_json)
