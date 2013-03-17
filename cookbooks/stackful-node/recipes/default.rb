@@ -10,6 +10,7 @@ mongo_user = settings["db-user"]
 deploy_user = settings["deploy-user"]
 upstart_config = "/etc/init/node-web.conf"
 deploy_repo = "/home/#{deploy_user}/#{app_name}.git"
+config_file = File.join("/etc", "stackful", "stackful-node.json")
 
 ::Chef::Recipe.send(:include, ::Opscode::OpenSSL::Password)
 generated_mongodb_password = secure_password
@@ -56,6 +57,34 @@ end
 group node_group
 user node_user do
   gid node_group
+end
+
+ruby_block "write stack config" do
+  block do
+    require 'json'
+    config = {}
+    begin
+      File.open(config_file, "r") do |cf|
+        config = JSON.Parse
+      end
+    rescue Errno::ENOENT
+    end
+
+    config["web"] ||= {}
+    config["web"]["environment"] ||= {}
+    env = config["web"]["environment"]
+
+    mongo_url = "mongodb://#{mongo_user}:#{node['stackful-node']['db-password']}@localhost/#{app-name}"
+    env["MONGO_URL"] = mongo_url
+
+    File.open(config_file, "w") do |cf|
+      cf.puts(JSON.pretty_generate(config))
+    end
+  end
+end
+
+execute "secure stack config" do
+  command "chgrp #{node_group} '#{config_file}' && chmod 660 '#{config_file}'"
 end
 
 remote_directory app_home do
