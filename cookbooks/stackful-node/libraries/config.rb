@@ -12,5 +12,12 @@ module Stackful
       end
       config
     end
+
+    def mongo_url(config_file)
+      config = read_config config_file
+      web = config["web"] || {}
+      env = web["environment"] || {}
+      env["MONGO_URL"]
+    end
   end
 end

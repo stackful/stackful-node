@@ -43,17 +43,16 @@ EOF
 
     system command
   end
-  not_if { ::File.exists?(config_file) }
+  only_if { mongo_url(config_file).empty }
 end
 
 ruby_block "read_current_db_password" do
   block do
-    config = read_config config_file
-    mongo_url = config["MONGO_URL"]
+    mongo_url = mongo_url config_file
     m = mongo_url.match(/mongodb:\/\/(?<user>[^:]+):(?<password>[^@]+).*/)
     node.set_unless["stackful-node"]["db-password"] = m["password"]
   end
-  only_if { ::File.exists?(config_file) }
+  not_if { mongo_url(config_file).empty }
 end
 
 group node_group
