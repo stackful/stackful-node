@@ -43,7 +43,7 @@ EOF
 
     system command
   end
-  only_if { mongo_url(config_file).empty }
+  only_if { mongo_url(config_file).nil? }
 end
 
 ruby_block "read_current_db_password" do
@@ -52,7 +52,7 @@ ruby_block "read_current_db_password" do
     m = mongo_url.match(/mongodb:\/\/(?<user>[^:]+):(?<password>[^@]+).*/)
     node.set_unless["stackful-node"]["db-password"] = m["password"]
   end
-  not_if { mongo_url(config_file).empty }
+  not_if { mongo_url(config_file).nil? }
 end
 
 group node_group
