@@ -105,4 +105,4 @@ except IOError:
 config["deploy_user"] = git_user
 
 with open(config_file, "w") as cf:
-    cf.write(git_user)
+    cf.write(json.dumps(config, indent=True))
