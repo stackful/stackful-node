@@ -14,7 +14,6 @@ config_file = File.join("/etc", "stackful", "stackful-node.json")
 
 ::Chef::Recipe.send(:include, ::Opscode::OpenSSL::Password)
 generated_mongodb_password = secure_password
-puts "NEW MONGODB PASSWORD: " + generated_mongodb_password
 #####################################################################
 
 if settings["deploy-user"].nil?
