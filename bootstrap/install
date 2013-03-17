@@ -22,6 +22,7 @@ def message(msg):
     sys.stdout.flush()
     with open(summary_file, "a+") as f:
         f.write(msg)
+        f.write("\n")
 
 
 #reset summary file
