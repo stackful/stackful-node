@@ -32,7 +32,7 @@ run("rm -f '{}'".format(summary_file))
 config_dir = os.path.join("/etc", "stackful")
 run("mkdir -p '{}'".format(config_dir))
 config_file = os.path.join(config_dir, "stackful-node.json")
-os.unlink(config_file)
+run("rm -f '{}'".format(config_file))
 
 message("Checking if OS/Distro is supported...")
 distro, version, _ = platform.dist()
