@@ -26,7 +26,7 @@ ruby_block "generate_new_db_password" do
   block do
     node.set_unless["stackful-node"]["db-password"] = generated_mongodb_password
   end
-  not_if { ::File.exists?(upstart_config) }
+  only_if { mongo_url(config_file).nil? }
 end
 
 # don't use execute, as it seems to use attributes set at recipe compile time
