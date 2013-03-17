@@ -14,23 +14,11 @@ config_file = File.join("/etc", "stackful", "stackful-node.json")
 
 ::Chef::Recipe.send(:include, ::Opscode::OpenSSL::Password)
 generated_mongodb_password = secure_password
+::Chef::Recipe.send(:include, ::Stackful::Config)
 #####################################################################
 
 if settings["deploy-user"].nil?
   Chef::Application.fatal!("You must set ['stackful-node']['deploy-user'].")
-end
-
-require 'json'
-
-def read_config
-  config = {}
-  begin
-    File.open(config_file, "r") do |cf|
-      config = JSON.parse(cf.read)
-    end
-  rescue Errno::ENOENT
-  end
-  config
 end
 
 ruby_block "generate_new_db_password" do
@@ -59,7 +47,7 @@ end
 
 ruby_block "read_current_db_password" do
   block do
-    config = read_config
+    config = read_config config_file
     mongo_url = config["MONGO_URL"]
     m = mongo_url.match(/mongodb:\/\/(?<user>[^:]+):(?<password>[^@]+).*/)
     node.set_unless["stackful-node"]["db-password"] = m["password"]
@@ -74,7 +62,7 @@ end
 
 ruby_block "write stack config" do
   block do
-    config = read_config
+    config = read_config config_file
     config["web"] ||= {}
     config["web"]["environment"] ||= {}
     env = config["web"]["environment"]
