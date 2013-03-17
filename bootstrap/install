@@ -19,6 +19,7 @@ def read_text(file_path):
 
 def message(msg):
     print(msg)
+    sys.stdout.flush()
     with open(summary_file, "a+") as f:
         f.write(msg)
 
