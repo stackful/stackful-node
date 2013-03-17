@@ -26,7 +26,7 @@ def message(msg):
 #reset summary file
 user_home = os.getenv("HOME")
 summary_file = os.path.join(user_home, "stackful-node-summary.txt")
-os.unlink(summary_file)
+run("rm -f '{}'".format(summary_file))
 
 # reset stack configuration
 config_dir = os.path.join("/etc", "stackful")
