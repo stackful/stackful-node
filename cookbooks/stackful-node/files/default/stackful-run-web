@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import os
+import sys
+import json
+
+if len(sys.argv) != 2:
+    print("run-web <config file>")
+    sys.exit(255)
+
+config_file = sys.argv[1]
+with open(config_file, "r") as cf:
+    config = json.load(cf)
+
+web_env = os.environ.copy()
+config_env = {}
+
+if "web" in config and "environment" in config["web"]:
+    config_env = config["web"]["environment"]
+
+for var, val in config_env.items():
+    web_env[var] = val
+
+flushables = [sys.stdout, sys.stderr]
+for f in flushables:
+    f.flush()
+
+#replace current process with node, passing the custom environment
+os.execvpe("node", ["node", "app.js"], web_env)

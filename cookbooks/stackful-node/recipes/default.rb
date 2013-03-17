@@ -20,6 +20,19 @@ if settings["deploy-user"].nil?
   Chef::Application.fatal!("You must set ['stackful-node']['deploy-user'].")
 end
 
+require 'json'
+
+def read_config
+  config = {}
+  begin
+    File.open(config_file, "r") do |cf|
+      config = JSON.parse(cf.read)
+    end
+  rescue Errno::ENOENT
+  end
+  config
+end
+
 ruby_block "generate_new_db_password" do
   block do
     node.set_unless["stackful-node"]["db-password"] = generated_mongodb_password
@@ -41,16 +54,17 @@ EOF
 
     system command
   end
-  not_if { ::File.exists?(upstart_config) }
+  not_if { ::File.exists?(config_file) }
 end
 
 ruby_block "read_current_db_password" do
   block do
-    upstart_config_text = ::File.read(upstart_config)
-    m = upstart_config_text.match(/MONGO_URL=mongodb:\/\/(?<user>[^:]+):(?<password>[^@]+).*/)
+    config = read_config
+    mongo_url = config["MONGO_URL"]
+    m = mongo_url.match(/mongodb:\/\/(?<user>[^:]+):(?<password>[^@]+).*/)
     node.set_unless["stackful-node"]["db-password"] = m["password"]
   end
-  only_if { ::File.exists?(upstart_config) }
+  only_if { ::File.exists?(config_file) }
 end
 
 group node_group
@@ -60,15 +74,7 @@ end
 
 ruby_block "write stack config" do
   block do
-    require 'json'
-    config = {}
-    begin
-      File.open(config_file, "r") do |cf|
-        config = JSON.parse(cf.read)
-      end
-    rescue Errno::ENOENT
-    end
-
+    config = read_config
     config["web"] ||= {}
     config["web"]["environment"] ||= {}
     env = config["web"]["environment"]
@@ -92,6 +98,16 @@ remote_directory app_home do
   group node_group
   files_owner node_user
   files_group node_group
+end
+
+cookbook_file "/usr/local/bin/stackful-run-web" do
+  source "stackful-run-web"
+  mode 00755
+
+  owner "root"
+  group "root"
+  files_owner "root"
+  files_group "root"
 end
 
 template upstart_config do
