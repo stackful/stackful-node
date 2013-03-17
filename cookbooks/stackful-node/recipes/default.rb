@@ -88,8 +88,8 @@ remote_directory app_home do
   files_group node_group
 end
 
-cookbook_file "/usr/local/bin/stackful-run-web" do
-  source "stackful-run-web"
+cookbook_file "/usr/local/bin/stackful-node-web" do
+  source "stackful-node-web"
   mode 00755
 
   owner "root"
