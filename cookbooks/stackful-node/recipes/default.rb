@@ -86,9 +86,10 @@ execute "demo app install" do
   group node_group
   cwd "/tmp"
 
-  command <<EOCOMMAND
-    curl -L https://github.com/stackful/#{demo_repo}/archive/master.tar.gz | tar zx &&
-    mv #{demo_repo}-master/* #{app_home}
+  command <<-EOCOMMAND
+curl -L https://github.com/stackful/#{demo_repo}/archive/master.tar.gz | tar zx && \
+mkdir -p #{app_home} && \
+mv #{demo_repo}-master/* #{app_home}
 EOCOMMAND
   not_if { ::File.exists?(app_home) }
 end
