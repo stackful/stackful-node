@@ -86,7 +86,7 @@ execute "create app home" do
   command <<-EOCOMMAND
 mkdir -p '#{app_home}' &&\
 touch '#{install_demo_marker}'
-chown -R #{node_user}:#{node_group} '#{app_home}"
+chown -R #{node_user}:#{node_group} '#{app_home}'"
 EOCOMMAND
 
   not_if { ::File.exists?(app_home) }
