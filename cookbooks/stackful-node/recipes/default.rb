@@ -11,6 +11,7 @@ deploy_user = settings["deploy-user"]
 upstart_config = "/etc/init/node-web.conf"
 deploy_repo = "/home/#{deploy_user}/#{app_name}.git"
 config_file = File.join("/etc", "stackful", "stackful-node.json")
+demo_repo = "demo-node-express-mongodb"
 
 ::Chef::Recipe.send(:include, ::Opscode::OpenSSL::Password)
 generated_mongodb_password = secure_password
@@ -80,12 +81,16 @@ execute "secure stack config" do
   command "chgrp #{node_group} '#{config_file}' && chmod 660 '#{config_file}'"
 end
 
-remote_directory app_home do
-  source "node-web"
-  owner node_user
+execute "demo app install" do
+  user node_user
   group node_group
-  files_owner node_user
-  files_group node_group
+  cwd "/tmp"
+
+  command <<EOCOMMAND
+    curl -L https://github.com/stackful/#{demo_repo}/archive/master.tar.gz | tar zx &&
+    mv #{demo_repo}-master/* #{app_home}
+EOCOMMAND
+  not_if { ::File.exists?(app_home) }
 end
 
 cookbook_file "/usr/local/bin/stackful-node-web" do
