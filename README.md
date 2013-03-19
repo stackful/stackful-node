@@ -57,3 +57,49 @@ With your Git deployment details now properly set up, the only thing left is to 
 
     The application will be automatically restarted on every push deployment and your
     changes will immediately go live.
+
+## Deploying Your Application to Your Server
+
+The summary above says it all, but let's go through the process together. First you need to add your server's deploy repository as a remote:
+
+    ~/tmp/test-deploy git remote add stackful git@X.X.X.X:node-web.git
+
+Then push your current branch:
+
+    ~/tmp/test-deploy git push stackful master                                                       [master]
+    Counting objects: 44, done.
+    Delta compression using up to 4 threads.
+    Compressing objects: 100% (35/35), done.
+    Writing objects: 100% (44/44), 3.74 KiB, done.
+    Total 44 (delta 17), reused 0 (delta 0)
+    remote: Initialized empty Git repository in /var/www/node-web/.git/
+    remote: From /home/git/node-web
+    remote:  * branch            master     -> FETCH_HEAD
+    remote: HEAD is now at fcbd3ce deploy.
+    remote: npm http GET https://registry.npmjs.org/express/3.0.6
+    ...
+    remote: npm http 200 https://registry.npmjs.org/formidable/-/formidable-1.0.11.tgz
+    remote: 
+    remote: ejs@0.8.3 node_modules/ejs
+    remote: 
+    remote: express@3.0.6 node_modules/express
+    remote: ├── methods@0.0.1
+    remote: ├── fresh@0.1.0
+    remote: ├── range-parser@0.0.4
+    remote: ├── cookie-signature@0.0.1
+    remote: ├── buffer-crc32@0.1.1
+    remote: ├── cookie@0.0.5
+    remote: ├── debug@0.7.2
+    remote: ├── commander@0.6.1
+    remote: ├── mkdirp@0.3.3
+    remote: ├── send@0.1.0 (mime@1.2.6)
+    remote: └── connect@2.7.2 (pause@0.0.1, bytes@0.1.0, formidable@1.0.11, qs@0.5.1)
+    remote: node-web start/running, process 2109
+    remote: Setting up a mirror Git repository at '/var/www/node-web'.
+    remote: Wiping demo web app in '/var/www/node-web'...
+    remote: Restarting: node-web ...
+    To git@X.X.X.X:node-web.git
+     * [new branch]      master -> master
+
+
+As you can see your code got deployed to `/var/www/node-web` (the default location). The deployer nuked the existing demo app and ran `npm` to update your required packages listed in your `package.json` file. `npm` updates get triggered on every deployment, so that dependencies are kept in sync with your configuration. Refresh your browser and you should see your changes live.
