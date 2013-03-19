@@ -62,11 +62,11 @@ With your Git deployment details now properly set up, the only thing left is to 
 
 The summary above says it all, but let's go through the process together. First you need to add your server's deploy repository as a remote:
 
-    ~/tmp/test-deploy git remote add stackful git@X.X.X.X:node-web.git
+    ~/tmp/test-deploy $ git remote add stackful git@X.X.X.X:node-web.git
 
 Then push your current branch:
 
-    ~/tmp/test-deploy git push stackful master                                                       [master]
+    ~/tmp/test-deploy $ git push stackful master                                                       [master]
     Counting objects: 44, done.
     Delta compression using up to 4 threads.
     Compressing objects: 100% (35/35), done.
@@ -103,3 +103,20 @@ Then push your current branch:
 
 
 As you can see your code got deployed to `/var/www/node-web` (the default location). The deployer nuked the existing demo app and ran `npm` to update your required packages listed in your `package.json` file. `npm` updates get triggered on every deployment, so that dependencies are kept in sync with your configuration. Refresh your browser and you should see your changes live.
+
+## Manual Deployment (sans Git)
+
+Git is a very cool source control system, but it's still far from global domination. If you use another SCM tool or just don't like Git push deployments, you can deploy manually using a directory copy and restart command combo. Here is one that uses `rsync` to transfer your app's files to the remote server and then tells Upstart to restart the Node.js app:
+
+    ~/tmp/test-deploy $ rsync -avz --delete ./ deploy@X.X.X.X:/var/www/node-web
+    sending incremental file list
+    ./
+    app.js
+
+    sent 16268 bytes  received 177 bytes  10963.33 bytes/sec
+    total size is 1376738  speedup is 83.72
+    ~/tmp/test-deploy $ ssh deploy@X.X.X.X sudo restart node-web
+    node-web start/running, process 2586
+
+
+Note that you will need to change the `/var/www/node-web` directory ownership or permissions, so that your `deploy` user has write permissions. Your deployment user needs to have sudo privileges in order to restart Upstart jobs as root.
