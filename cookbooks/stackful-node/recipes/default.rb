@@ -84,8 +84,8 @@ end
 
 execute "create app home" do
   command <<-EOCOMMAND
-mkdir -p '#{app_home}' &&\
-touch '#{install_demo_marker}'
+mkdir -p '#{app_home}' && \
+touch '#{install_demo_marker}' && \
 chown -R #{node_user}:#{node_group} '#{app_home}'"
 EOCOMMAND
 
