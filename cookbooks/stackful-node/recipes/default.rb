@@ -12,6 +12,7 @@ upstart_config = "/etc/init/node-web.conf"
 deploy_repo = "/home/#{deploy_user}/#{app_name}.git"
 config_file = File.join("/etc", "stackful", "stackful-node.json")
 demo_repo = "demo-node-express-mongodb"
+install_demo_marker = File.join(app_home, "install-demo")
 
 ::Chef::Recipe.send(:include, ::Opscode::OpenSSL::Password)
 generated_mongodb_password = secure_password
@@ -81,6 +82,16 @@ execute "secure stack config" do
   command "chgrp #{node_group} '#{config_file}' && chmod 660 '#{config_file}'"
 end
 
+execute "create app home" do
+  command <<-EOCOMMAND
+mkdir -p '#{app_home}' &&\
+touch '#{install_demo_marker}'
+chown -R #{node_user}:#{node_group} '#{app_home}"
+EOCOMMAND
+
+  not_if { ::File.exists?(app_home) }
+end
+
 execute "demo app install" do
   user node_user
   group node_group
@@ -90,9 +101,10 @@ execute "demo app install" do
 curl -L https://github.com/stackful/#{demo_repo}/archive/master.tar.gz | tar zx && \
 mkdir -p #{app_home} && \
 mv #{demo_repo}-master/* #{app_home} && \
-rm -rf #{demo_repo}-master
+rm -rf #{demo_repo}-master && \
+rm '#{install_demo_marker}'
 EOCOMMAND
-  not_if { ::File.exists?(app_home) }
+  only_if { ::File.exists?(install_demo_marker) }
 end
 
 cookbook_file "/usr/local/bin/stackful-node-web" do
