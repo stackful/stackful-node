@@ -89,7 +89,8 @@ execute "demo app install" do
   command <<-EOCOMMAND
 curl -L https://github.com/stackful/#{demo_repo}/archive/master.tar.gz | tar zx && \
 mkdir -p #{app_home} && \
-mv #{demo_repo}-master/* #{app_home}
+mv #{demo_repo}-master/* #{app_home} && \
+rm -rf #{demo_repo}-master
 EOCOMMAND
   not_if { ::File.exists?(app_home) }
 end
