@@ -37,8 +37,9 @@ config_file = os.path.join(config_dir, "stackful-node.json")
 
 message("Checking if OS/Distro is supported...")
 distro, version, _ = platform.dist()
-if distro != "Ubuntu" or version != "12.04":
-    message("Unsupported OS/distro. Supported: Ubuntu 12.04")
+os_supported = distro == "Ubuntu" and (version == "12.04" or version == "12.10")
+if not os_supported:
+    message("Unsupported OS/distro. Supported: Ubuntu 12.04, Ubuntu 12.10")
     sys.exit(255)
 
 message("Installing prerequisite packages...")
