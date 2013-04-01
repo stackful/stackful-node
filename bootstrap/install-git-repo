@@ -44,8 +44,8 @@ except IOError:
 
 SHOW_UI = True
 
-if "deploy_user" in config and "deploy_key" in config:
-    SHOW_UI = False
+if "show_ui" in config:
+    SHOW_UI = config["show_ui"]
 
 
 # Go on with Git deployment
@@ -77,7 +77,7 @@ We will be setting up a SSH key-based authentication, so that you do not have to
 result = 255
 git_user, git_password, git_key = config.get("deploy_user", ""), "", config.get("deploy_key", "")
 
-if not git_user:
+if SHOW_UI and not git_user:
     git_user = read_nonempty("Git user name:", "git", " Git Deployment ", "User required.", "input_box")
 
 user_exists = False
@@ -101,7 +101,7 @@ https://help.github.com/articles/generating-ssh-keys
 """.strip()
     d.msg_box(ssh_key_text, " Git Deployment ", width=70, height=20)
 
-if not git_key:
+if SHOW_UI and not git_key:
     git_key = read_nonempty(None, None, " Git Deployment -- SSH Public Key ", "Public key required.", "edit_box")
 
 if not user_exists:
