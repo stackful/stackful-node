@@ -9,37 +9,6 @@ import json
 import pwd
 
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-config_file = os.path.join("/etc", "stackful", "stackful-node.json")
-# Go on with Git deployment
-d = dialog.Dialog("Stackful.io -- Node.js")
-welcome_text = """
-Welcome to the Stackful.io Node.js stack installer!
-
-This installer will walk you through creating a user account for Git deployment and will then start the Stack installation which will set your server up with:
-
-* Nginx as a HTTP front handler
-* MongoDB as a database server
-* A Node.js application server process monitored by Upstart.
-
-NOTE: The installer requires Ubuntu 12.04. It is not guaranteed to run on other distros yet.
-""".strip()
-
-d.msg_box(welcome_text, " Welcome ", width=70, height=20)
-
-git_user_text = """
-We will now create a system user that will be used to perform Git deployments.
-
-Your Git repository will be hosted in the user home directory and an update hook will take care of redeploying your application on every code push.
-
-We will be setting up a SSH key-based authentication, so that you do not have to type your password every time. We will also set a password for that account, so that you can log in if something goes wrong.
-""".strip()
-d.msg_box(git_user_text, " Git Deployment ", width=70, height=20)
-
-result = 255
-git_user, git_password, git_key = "", "", ""
-
-
 def read_nonempty(prompt, value, title, error_message, input_type):
     while True:
         if input_type == "input_box":
@@ -63,7 +32,54 @@ def read_nonempty(prompt, value, title, error_message, input_type):
         else:
             return input_value
 
-git_user = read_nonempty("Git user name:", "git", " Git Deployment ", "User required.", "input_box")
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_file = os.path.join("/etc", "stackful", "stackful-node.json")
+try:
+    with open(config_file, "r") as cf:
+        config = json.load(cf)
+except IOError:
+    config = {}
+
+
+SHOW_UI = True
+
+if "deploy_user" in config and "deploy_key" in config:
+    SHOW_UI = False
+
+
+# Go on with Git deployment
+d = dialog.Dialog("Stackful.io -- Node.js")
+welcome_text = """
+Welcome to the Stackful.io Node.js stack installer!
+
+This installer will walk you through creating a user account for Git deployment and will then start the Stack installation which will set your server up with:
+
+* Nginx as a HTTP front handler
+* MongoDB as a database server
+* A Node.js application server process monitored by Upstart.
+
+NOTE: The installer requires Ubuntu 12.04. It is not guaranteed to run on other distros yet.
+""".strip()
+
+if SHOW_UI:
+    d.msg_box(welcome_text, " Welcome ", width=70, height=20)
+
+    git_user_text = """
+We will now create a system user that will be used to perform Git deployments.
+
+Your Git repository will be hosted in the user home directory and an update hook will take care of redeploying your application on every code push.
+
+We will be setting up a SSH key-based authentication, so that you do not have to type your password every time. We will also set a password for that account, so that you can log in if something goes wrong.
+""".strip()
+    d.msg_box(git_user_text, " Git Deployment ", width=70, height=20)
+
+result = 255
+git_user, git_password, git_key = config.get("deploy_user", ""), "", config.get("deploy_key", "")
+
+if not git_user:
+    git_user = read_nonempty("Git user name:", "git", " Git Deployment ", "User required.", "input_box")
+
 user_exists = False
 try:
     pwd.getpwnam(git_user)
@@ -71,20 +87,22 @@ try:
 except KeyError:
     pass
 
-git_password = None
-if not user_exists:
-    git_password = read_nonempty("Git password:", "", " Git Deployment ", "Password required.", "password_box")
+if SHOW_UI:
+    git_password = None
+    if not user_exists:
+        git_password = read_nonempty("Git password:", "", " Git Deployment ", "Password required.", "password_box")
 
-ssh_key_text = r"""
+    ssh_key_text = r"""
 Time to set up key-based SSH authentication for your account that will be used to push changes to the Git repository.
 
 All we need is your SSH public key. If you are not sure what that is or do not yet have one, please check GitHub's walkthrough at:
 
 https://help.github.com/articles/generating-ssh-keys
 """.strip()
-d.msg_box(ssh_key_text, " Git Deployment ", width=70, height=20)
+    d.msg_box(ssh_key_text, " Git Deployment ", width=70, height=20)
 
-git_key = read_nonempty(None, None, " Git Deployment -- SSH Public Key ", "Public key required.", "edit_box")
+if not git_key:
+    git_key = read_nonempty(None, None, " Git Deployment -- SSH Public Key ", "Public key required.", "edit_box")
 
 if not user_exists:
     create_user_cmd = 'useradd --create-home --shell=/bin/bash {user}'.format(user=git_user)
@@ -107,13 +125,8 @@ git_user_shell.stdin.write(ssh_auth_commands)
 git_user_shell.stdin.close()
 git_user_shell.communicate()
 
-try:
-    with open(config_file, "r") as cf:
-        config = json.load(cf)
-except IOError:
-    config = {}
-
 config["deploy_user"] = git_user
+config["deploy_key"] = git_key
 
 with open(config_file, "w") as cf:
     cf.write(json.dumps(config, indent=True))
