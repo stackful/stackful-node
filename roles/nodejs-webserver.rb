@@ -7,11 +7,11 @@ description 'Stackful.io Node.js web app server'
 
 default_attributes(
     "nodejs" => {
-    "install_method" => "source",
+    "install_method" => "package",
     "version" => "0.10.0"
   },
     "nginx" => {
-    "install_method" => "source",
+    "install_method" => "package",
     "init_style" => "init",
     "version" => "1.3.14"
   },
@@ -22,7 +22,6 @@ default_attributes(
 
 
 run_list [
-  "recipe[nginx::default]",
   "recipe[nodejs::default]",
   "recipe[mongodb::10gen_repo]",
   "recipe[mongodb::default]",

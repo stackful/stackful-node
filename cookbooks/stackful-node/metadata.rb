@@ -8,7 +8,9 @@ version          "1.0.0"
 
 recipe "stackful-node", "The Stackful.io Node.js web app stack"
 
-depends "openssl"
+%w{ apt build-essential openssl ohai nginx mongodb nodejs }.each do |os|
+  depends os
+end
 
 %w{ ubuntu }.each do |os|
   supports os

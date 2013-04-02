@@ -137,6 +137,17 @@ end
 execute "stop node-web || true"
 execute "start node-web"
 
+apt_repository "nginx" do
+  # Ubuntu only!
+  uri "http://ppa.launchpad.net/sjinks/x3m/ubuntu"
+  distribution node['lsb']['codename']
+  components ["main"]
+  keyserver "keyserver.ubuntu.com"
+  key "67C617E5"
+end
+
+include_recipe "nginx::default"
+
 ["default", "000-default"].each do |unused_default|
   nginx_site unused_default do
     enable false
