@@ -148,6 +148,12 @@ end
 
 include_recipe "nginx::default"
 
+# The nginx::default recipe has the gzip config in the main nginx.conf file,
+# so we need this to avoid duplicate config errors.
+execute "fix x3m nginx config" do
+  command "rm -f '/etc/nginx/conf.d/gzip.conf'"
+end
+
 ["default", "000-default"].each do |unused_default|
   nginx_site unused_default do
     enable false
