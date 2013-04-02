@@ -1,3 +1,4 @@
 params*.json
 git_user.txt
 *.pyc
+.vagrant
