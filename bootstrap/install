@@ -12,6 +12,17 @@ def run(cmd, cwd=None):
     return subprocess.check_call(cmd, cwd=cwd, shell=True)
 
 
+def retry_commands(action, retries=1):
+    for i in range(0, retries):
+        try:
+            result = action()
+            return result
+        except subprocess.CalledProcessError:
+            # Scream if it's our last attempt
+            if i >= retries - 1:
+                raise
+
+
 def read_text(file_path):
     with open(file_path, "r") as f:
         return f.read()
@@ -25,10 +36,27 @@ def message(msg):
         f.write("\n")
 
 
+def git_clone(retries=1):
+    def action():
+        run("rm -rf '{}'".format(stack_source))
+        run("git clone '{repo}' '{dir}'".format(repo=stack_repo, dir=stack_source))
+    retry_commands(action, retries)
+
+
+def git_submodule_update(retries=1):
+    def action():
+        run_stack("git submodule update --init")
+    retry_commands(action, retries)
+
+
 #reset summary file
 user_home = os.getenv("HOME")
 summary_file = os.path.join(user_home, "stackful-node-summary.txt")
 run("rm -f '{}'".format(summary_file))
+
+stack_repo = "https://github.com/stackful/stackful-node.git"
+stack_source = "/tmp/stackful-node"
+run_stack = functools.partial(run, cwd=stack_source)
 
 # reset stack configuration
 config_dir = os.path.join("/etc", "stackful")
@@ -46,15 +74,12 @@ message("Installing prerequisite packages...")
 run("DEBIAN_FRONTEND=noninteractive apt-get update --yes")
 run("DEBIAN_FRONTEND=noninteractive apt-get install --yes dialog git")
 
-stack_repo = "https://github.com/stackful/stackful-node.git"
-stack_source = "/tmp/stackful-node"
 
 message("Fetching stack files from {} ...".format(stack_repo))
-run("rm -rf '{}'".format(stack_source))
-run("git clone '{repo}' '{dir}'".format(repo=stack_repo, dir=stack_source))
 
-run_stack = functools.partial(run, cwd=stack_source)
-run_stack("git submodule update --init")
+git_clone(retries=5)
+git_submodule_update(retries=5)
+
 
 message("Setting up Git deploy user...")
 run_stack("./bootstrap/install-git-repo")
