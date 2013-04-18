@@ -29,9 +29,6 @@ def read_text(file_path):
 def message(msg):
     print(msg)
     sys.stdout.flush()
-    with open(summary_file, "a+") as f:
-        f.write(msg)
-        f.write("\n")
 
 
 def git_fetch(branch="production", retries=1):
@@ -53,12 +50,6 @@ def git_submodule_update(retries=1):
     def action():
         run_stack("git submodule update --init")
     retry_commands(action, retries)
-
-
-#reset summary file
-user_home = os.getenv("HOME")
-summary_file = os.path.join(user_home, "stackful-node-summary.txt")
-run("rm -f '{}'".format(summary_file))
 
 stack_repo = "https://github.com/stackful/stackful-node.git"
 stack_source = "/tmp/stackful-node"
@@ -82,7 +73,7 @@ run("DEBIAN_FRONTEND=noninteractive apt-get update --yes")
 run("DEBIAN_FRONTEND=noninteractive apt-get install --yes curl dialog git")
 
 
-message("Fetching stack files from {} ...".format(stack_repo))
+message("Fetching stack files from {}/{} ...".format(stack_repo, stack_branch))
 
 git_fetch(branch=stack_branch, retries=5)
 git_submodule_update(retries=5)
@@ -106,6 +97,3 @@ if not chef_installed:
 
 message("Finishing stack installation...")
 run_stack("./run")
-
-print("INSTALLATION SUMMARY (also saved to ~/stackful-node-summary.txt):\n")
-run("cat ~/stackful-node-summary.txt")
