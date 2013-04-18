@@ -3,6 +3,7 @@
 #####################################################################
 settings = node["stackful-node"]
 deploy_user = settings["deploy-user"]
+app_name = settings["app-name"]
 deploy_repo = "/home/#{deploy_user}/#{app_name}.git"
 #####################################################################
 
