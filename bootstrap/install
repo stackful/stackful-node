@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-
 from __future__ import absolute_import, division, print_function, unicode_literals
-
 import sys, os, platform
 import subprocess
 import functools
@@ -36,10 +34,18 @@ def message(msg):
         f.write("\n")
 
 
-def git_clone(retries=1):
+def git_fetch(branch="production", retries=1):
     def action():
-        run("rm -rf '{}'".format(stack_source))
-        run("git clone '{repo}' '{dir}'".format(repo=stack_repo, dir=stack_source))
+        if not os.path.exists(stack_source):
+            run("mkdir -p '{}'".format(stack_source))
+
+        git_dir = os.path.join(stack_source, ".git")
+        if not os.path.exists(git_dir):
+            run_stack("git init")
+            run_stack("git remote add origin '{}'".format(stack_repo))
+
+        run_stack("git fetch -f origin {}".format(branch))
+        run_stack("git reset --hard FETCH_HEAD")
     retry_commands(action, retries)
 
 
@@ -56,6 +62,7 @@ run("rm -f '{}'".format(summary_file))
 
 stack_repo = "https://github.com/stackful/stackful-node.git"
 stack_source = "/tmp/stackful-node"
+stack_branch = sys.argv[1] if len(sys.argv) == 2 else "production"
 run_stack = functools.partial(run, cwd=stack_source)
 
 # reset stack configuration
@@ -72,12 +79,12 @@ if not os_supported:
 
 message("Installing prerequisite packages...")
 run("DEBIAN_FRONTEND=noninteractive apt-get update --yes")
-run("DEBIAN_FRONTEND=noninteractive apt-get install --yes dialog git")
+run("DEBIAN_FRONTEND=noninteractive apt-get install --yes curl dialog git")
 
 
 message("Fetching stack files from {} ...".format(stack_repo))
 
-git_clone(retries=5)
+git_fetch(branch=stack_branch, retries=5)
 git_submodule_update(retries=5)
 
 
