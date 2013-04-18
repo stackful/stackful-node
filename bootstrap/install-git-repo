@@ -26,11 +26,6 @@ except KeyError:
 if not user_exists:
     create_user_cmd = 'useradd --create-home --shell=/bin/bash {user}'.format(user=git_user)
     subprocess.check_call(create_user_cmd, shell=True)
-    password_input = "{user}:{password}".format(user=git_user, password=git_password)
-    chpasswd = subprocess.Popen("chpasswd", stdin=subprocess.PIPE, shell=True)
-    chpasswd.stdin.write(password_input)
-    chpasswd.stdin.close()
-    chpasswd.communicate()
 
 ssh_auth_commands = """
 mkdir -p {home}/.ssh
