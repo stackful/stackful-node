@@ -4,8 +4,10 @@
 settings = node["stackful-node"]
 git_settings = node["stackful-git"]
 deploy_user = git_settings["deploy-user"]
+deploy_key = git_settings["deploy-key"]
 app_name = settings["app-name"]
-deploy_repo = "/home/#{deploy_user}/#{app_name}.git"
+deploy_user_home = "/home/#{deploy_user}"
+deploy_repo = "#{deploy_user_home}/#{app_name}.git"
 #####################################################################
 
 if git_settings["deploy-user"].nil?
@@ -13,6 +15,32 @@ if git_settings["deploy-user"].nil?
 end
 
 package "git"
+
+group deploy_user
+user deploy_user do
+  gid deploy_user
+  home deploy_user_home
+end
+
+directory deploy_user_home do
+  owner deploy_user
+  group deploy_user
+  mode 00744
+end
+
+execute "deploy user authorized_keys" do
+  user deploy_user
+  group deploy_user
+  cwd deploy_user_home
+
+  command <<-EOCOMMAND
+mkdir -p .ssh && \
+chmod 700 .ssh && \
+echo "#{deploy_key.strip}" > .ssh/authorized_keys && \
+chmod 600 .ssh/authorized_keys
+EOCOMMAND
+  not_if { ::File.exists?("#{deploy_user_home}/.ssh/authorized_keys") }
+end
 
 execute "mkdir -p #{deploy_repo}" do
   user deploy_user

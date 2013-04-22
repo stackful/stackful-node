@@ -68,11 +68,6 @@ message("Fetching stack files from {}/{} ...".format(stack_repo, stack_branch))
 git_fetch(branch=stack_branch, retries=5)
 git_submodule_update(retries=5)
 
-
-message("Setting up Git deploy user...")
-run_stack("./bootstrap/install-git-repo")
-
-
 chef_installed = False
 try:
     chef_location = subprocess.check_output("which chef-solo", shell=True)
