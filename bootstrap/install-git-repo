@@ -5,16 +5,17 @@ import subprocess
 import json
 import pwd
 
+#TODO: This really belongs in the Chef recipes
 script_dir = os.path.dirname(os.path.abspath(__file__))
-config_file = os.path.join("/etc", "stackful", "stackful-node.json")
+config_file = os.path.join("/etc", "stackful", "node.json")
 try:
     with open(config_file, "r") as cf:
-        config = json.load(cf)
-except IOError:
-    config = {}
+        git_config = json.load(cf)["git_deployment"]
+except (IOError, KeyError):
+    git_config = {}
 
 # Go on with Git deployment
-git_user, git_password, git_key = config.get("deploy_user", ""), "", config.get("deploy_key", "")
+git_user, git_password, git_key = git_config["deploy-user"], git_config["deploy_key"]
 
 user_exists = False
 try:
@@ -38,9 +39,3 @@ git_user_shell = subprocess.Popen("sudo -u {} sh".format(git_user), stdin=subpro
 git_user_shell.stdin.write(ssh_auth_commands)
 git_user_shell.stdin.close()
 git_user_shell.communicate()
-
-config["deploy_user"] = git_user
-config["deploy_key"] = git_key
-
-with open(config_file, "w") as cf:
-    cf.write(json.dumps(config, indent=True))

@@ -21,11 +21,6 @@ def retry_commands(action, retries=1):
                 raise
 
 
-def read_text(file_path):
-    with open(file_path, "r") as f:
-        return f.read()
-
-
 def message(msg):
     print(msg)
     sys.stdout.flush()
@@ -55,11 +50,6 @@ stack_repo = "https://github.com/stackful/stackful-node.git"
 stack_source = "/tmp/stackful-node"
 stack_branch = sys.argv[1] if len(sys.argv) == 2 else "production"
 run_stack = functools.partial(run, cwd=stack_source)
-
-# reset stack configuration
-config_dir = os.path.join("/etc", "stackful")
-run("mkdir -p '{}'".format(config_dir))
-config_file = os.path.join(config_dir, "stackful-node.json")
 
 message("Checking if OS/Distro is supported...")
 distro, version, _ = platform.dist()
