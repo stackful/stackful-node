@@ -7,48 +7,23 @@ app_name = settings["app-name"]
 node_user = settings["user"]
 node_group = settings["group"]
 mongo_user = settings["db-user"]
+mongo_password = settings["db-password"]
 upstart_config = "/etc/init/node-web.conf"
-config_file = File.join("/etc", "stackful", "stackful-node.json")
+config_file = File.join("/etc", "stackful", "node.json")
 demo_repo = "demo-node-express-mongodb"
 install_demo_marker = File.join(app_home, "install-demo")
 
-::Chef::Recipe.send(:include, ::Opscode::OpenSSL::Password)
-generated_mongodb_password = secure_password
-::Chef::Recipe.send(:include, ::Stackful::Config)
-::Chef::Resource::RubyBlock.send(:include, ::Stackful::Config)
 #####################################################################
 
-ruby_block "generate_new_db_password" do
-  block do
-    node.set_unless["stackful-node"]["db-password"] = generated_mongodb_password
-  end
-  only_if { mongo_url(config_file).nil? }
-end
-
-# don't use execute, as it seems to use attributes set at recipe compile time
-# and we fetch the db-password later on
-ruby_block "create_mongodb_user" do
-  block do
-    command = <<EOF
-  mongo localhost/#{app_name} --eval "
-    if (db.system.users.find({'user': '#{mongo_user}'}).length() == 0) {
-      db.addUser('#{mongo_user}', '#{node['stackful-node']['db-password']}')
-    }
-  "
-EOF
-
-    system command
-  end
-  only_if { mongo_url(config_file).nil? }
-end
-
-ruby_block "read_current_db_password" do
-  block do
-    mongo_url = mongo_url config_file
-    m = mongo_url.match(/mongodb:\/\/(?<user>[^:]+):(?<password>[^@]+).*/)
-    node.set_unless["stackful-node"]["db-password"] = m["password"]
-  end
-  not_if { mongo_url(config_file).nil? }
+# TODO: properly detect the user in a not_if clause
+execute "create_mongodb_user" do
+  command <<-EOCOMMAND
+mongo localhost/#{app_name} --eval "
+  if (db.system.users.find({'user': '#{mongo_user}'}).length() == 0) {
+    db.addUser('#{mongo_user}', '#{mongo_password}')
+  }
+"
+EOCOMMAND
 end
 
 group node_group
@@ -56,23 +31,7 @@ user node_user do
   gid node_group
 end
 
-ruby_block "write stack config" do
-  block do
-    config = read_config config_file
-    config["web"] ||= {}
-    config["web"]["environment"] ||= {}
-    env = config["web"]["environment"]
-
-    mongo_url = "mongodb://#{mongo_user}:#{node['stackful-node']['db-password']}@localhost/#{app_name}"
-    env["MONGO_URL"] = mongo_url
-
-    File.open(config_file, "w") do |cf|
-      cf.puts(JSON.pretty_generate(config))
-    end
-  end
-end
-
-execute "secure stack config" do
+execute "secure node config" do
   command "chgrp #{node_group} '#{config_file}' && chmod 660 '#{config_file}'"
 end
 
