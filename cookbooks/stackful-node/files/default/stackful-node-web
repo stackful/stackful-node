@@ -17,11 +17,11 @@ with open(config_file, "r") as cf:
 web_env = os.environ.copy()
 config_env = {}
 
-if "web" in config and "environment" in config["web"]:
-    config_env = config["web"]["environment"]
+if "stackful-environment" in config:
+    config_env = config["stackful-environment"]
 
 for var, val in config_env.items():
-    web_env[var] = val
+    web_env[var] = str(val)
 
 flushables = [sys.stdout, sys.stderr]
 for f in flushables:

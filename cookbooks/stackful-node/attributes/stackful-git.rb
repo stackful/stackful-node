@@ -1,2 +1,2 @@
 # General settings
-default['stackful-node']['deploy-user'] = nil
+default['stackful-git']['deploy-user'] = nil

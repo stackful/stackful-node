@@ -7,4 +7,4 @@ setuid <%= node['stackful-node']['user'] %>
 setgid <%= node['stackful-node']['group'] %>
 
 chdir <%= node['stackful-node']['app-home'] %>
-exec stackful-node-web /etc/stackful/stackful-node.json
+exec stackful-node-web /etc/stackful/node.json
