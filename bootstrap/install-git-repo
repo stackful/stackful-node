@@ -15,7 +15,7 @@ except (IOError, KeyError):
     git_config = {}
 
 # Go on with Git deployment
-git_user, git_password, git_key = git_config["deploy-user"], git_config["deploy_key"]
+git_user, git_key = git_config["deploy-user"], git_config["deploy-key"]
 
 user_exists = False
 try:

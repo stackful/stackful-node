@@ -2,13 +2,14 @@
 # Settings
 #####################################################################
 settings = node["stackful-node"]
-deploy_user = settings["deploy-user"]
+git_settings = node["git_deployment"]
+deploy_user = git_settings["deploy-user"]
 app_name = settings["app-name"]
 deploy_repo = "/home/#{deploy_user}/#{app_name}.git"
 #####################################################################
 
-if settings["deploy-user"].nil?
-  Chef::Application.fatal!("You must set ['stackful-node']['deploy-user'].")
+if git_settings["deploy-user"].nil?
+  Chef::Application.fatal!("You must set ['git_deployment']['deploy-user'].")
 end
 
 package "git"
