@@ -10,7 +10,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 config_file = os.path.join("/etc", "stackful", "node.json")
 try:
     with open(config_file, "r") as cf:
-        git_config = json.load(cf)["git_deployment"]
+        git_config = json.load(cf)["stackful-git"]
 except (IOError, KeyError):
     git_config = {}
 
