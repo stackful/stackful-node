@@ -60,14 +60,6 @@ EOCOMMAND
   only_if { ::File.exists?(install_demo_marker) }
 end
 
-cookbook_file "/usr/local/bin/stackful-node-web" do
-  source "stackful-node-web"
-  mode 00755
-
-  owner "root"
-  group "root"
-end
-
 template upstart_config do
   source "upstart/node-web.conf.erb"
   owner "root"
