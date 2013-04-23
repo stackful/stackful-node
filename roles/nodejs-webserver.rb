@@ -25,6 +25,6 @@ run_list [
   "recipe[nodejs::default]",
   "recipe[mongodb::10gen_repo]",
   "recipe[mongodb::default]",
-  'recipe[stackful-node::default]',
-  'recipe[stackful-node::stackful-git]'
+  'recipe[stackful-node::stackful-git]',
+  'recipe[stackful-node::default]'
 ]

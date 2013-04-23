@@ -7,6 +7,7 @@ def run(cmd):
 
 
 params = dict(
+                deployer_home="<%= node["stackful-git"]["deployer-home"] %>"
                 git_dir=os.path.abspath(os.getenv("GIT_DIR")),
                 app_deploy_dir="<%= node["stackful-node"]["app-home"] %>",
                 app_user="<%= node["stackful-node"]["user"] %>",
@@ -20,5 +21,5 @@ if branch != "master":
 
 
 os.unsetenv("GIT_DIR")
-deploy_cmd = "python hooks/stackful/deploy.py '{app_user}' '{app_name}' '{git_dir}' '{app_deploy_dir}'".format(**params)
+deploy_cmd = "{deployer_home}/bin/deploy '{app_user}' '{app_name}' '{git_dir}' '{app_deploy_dir}'".format(**params)
 run(deploy_cmd)

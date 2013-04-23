@@ -5,6 +5,9 @@ settings = node["stackful-node"]
 git_settings = node["stackful-git"]
 deploy_user = git_settings["deploy-user"]
 deploy_key = git_settings["deploy-key"]
+deployer_source = git_settings["deployer-source"]
+deployer_home = git_settings["deployer-home"]
+deployer_branch = git_settings["deployer-branch"]
 app_name = settings["app-name"]
 deploy_user_home = "/home/#{deploy_user}"
 deploy_repo = "#{deploy_user_home}/#{app_name}.git"
@@ -57,12 +60,22 @@ execute "git init --bare" do
   not_if { File.exists?("#{deploy_repo}/refs") }
 end
 
-remote_directory deploy_repo do
-  source "repository"
-  owner deploy_user
-  group deploy_user
-  files_owner deploy_user
-  files_group deploy_user
+execute "install app-deployer" do
+  command <<-EOCOMMAND
+mkdir -p '#{deployer_home}' && \
+cd '#{deployer_home}' && \
+git init && \
+git remote add origin '#{deployer_source}'
+EOCOMMAND
+  not_if { ::File.exists?("#{deployer_home}/.git") }
+end
+
+execute "update app-deployer" do
+  cwd deployer_home
+  command <<-EOCOMMAND
+git fetch -f origin #{deployer_branch} && \
+git reset --hard FETCH_HEAD
+EOCOMMAND
 end
 
 template "#{deploy_repo}/hooks/post-update" do
