@@ -25,7 +25,7 @@ end
 directory deploy_user_home do
   owner deploy_user
   group deploy_user
-  mode 00744
+  mode 00755
 end
 
 execute "deploy user authorized_keys" do
