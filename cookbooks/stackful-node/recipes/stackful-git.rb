@@ -25,6 +25,11 @@ user deploy_user do
   home deploy_user_home
 end
 
+group "stackful" do
+  members [deploy_user]
+  append true
+end
+
 directory deploy_user_home do
   owner deploy_user
   group deploy_user

@@ -31,8 +31,13 @@ user node_user do
   gid node_group
 end
 
+group "stackful" do
+  members [node_user]
+  append true
+end
+
 execute "secure node config" do
-  command "chgrp #{node_group} '#{config_file}' && chmod 660 '#{config_file}'"
+  command "chgrp stackful '#{config_file}' && chmod 660 '#{config_file}'"
 end
 
 execute "create app home" do
