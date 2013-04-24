@@ -6,4 +6,4 @@ import json
 stack_dir = os.path.dirname(os.path.abspath(__file__))
 
 chef_cmd = "chef-solo -c '{0}/stack.rb' -j '/etc/stackful/node.json'".format(stack_dir)
-subprocess.call(chef_cmd, shell=True)
+subprocess.check_call(chef_cmd, shell=True)
