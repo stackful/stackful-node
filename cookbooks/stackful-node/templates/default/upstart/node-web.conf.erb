@@ -6,5 +6,6 @@ respawn
 setuid <%= node['stackful-node']['user'] %>
 setgid <%= node['stackful-node']['group'] %>
 
+env PYTHONPATH=<%= node["stackful-git"]["deployer-home"] %>
 chdir <%= node['stackful-node']['app-home'] %>
 exec <%= node['stackful-git']['deployer-home'] %>/bin/stackful-node-web /etc/stackful/node.json
