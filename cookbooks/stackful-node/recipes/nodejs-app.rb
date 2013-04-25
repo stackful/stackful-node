@@ -78,6 +78,9 @@ execute "npm install" do
   # npm install is notoriously flakey, so retry up to 6 times
   retries 6
   retry_delay 10
+  environment({
+    "HOME" => node_user_home
+  })
 end
 
 execute "stop node-web || true"
