@@ -4,6 +4,7 @@
 settings = node["stackful-node"]
 node_user = settings["user"]
 node_group = settings["group"]
+node_user_home = "/home/#{node_user}"
 app_home = settings["app-home"]
 app_name = settings["app-name"]
 install_demo_marker = File.join(app_home, "install-demo")
@@ -15,6 +16,13 @@ upstart_config = "/etc/init/node-web.conf"
 group node_group
 user node_user do
   gid node_group
+  home node_user_home
+end
+
+directory node_user_home do
+  owner node_user
+  group node_group
+  mode 00755
 end
 
 group "stackful" do
@@ -66,9 +74,6 @@ end
 execute "npm install" do
   user node_user
   group node_group
-  environment({
-    "HOME" => app_home
-  })
   cwd app_home
   # npm install is notoriously flakey, so retry up to 6 times
   retries 6
