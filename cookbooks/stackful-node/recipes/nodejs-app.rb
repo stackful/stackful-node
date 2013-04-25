@@ -76,7 +76,7 @@ template upstart_config do
   mode "0600"
 end
 
-execute "npm install" do
+execute "demo app npm package update" do
   user node_user
   group node_group
   cwd app_home
