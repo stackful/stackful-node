@@ -1,0 +1,20 @@
+{
+ "stackful-environment": {
+  "MONGO_URL": "mongodb://node-web:VRyisb15r2Q15OZ@localhost/node-web",
+  "PORT": 3000
+ },
+ "stackful-git": {
+  "deploy-key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCcH0zxGFjSs85czzTZVG6I0KvAu+r3QRnPY4o+HZ8wKT8soaB3KrwpaRXh02CvmMDvzHm9ItVJ2rxCiX0wRT2u0830NI0mwmDaSDZXIr880Z43M+lIdH69LvQaZXKS0ykyen1/8nXBmQFDVF+1A8b6GH5x/vp5OMSN4djlBmLjNLBqu+8cQ2rWNEseL4wH1epDzpr/JwPaJEpi9EOteLCLBWsWJOHtw6CJS48pZ0Fkk70ePMcx0px05iA/cRVGAVu3XC8Gmcz9xjAPqSs0Ts/sDGxnw2bKhgMb+tL8FFgdxP4adrMiczKIfvVeKkgMbwl61AG1LCl1qA2rmf7LQZXl hdeshev-progstr\r\n",
+  "deploy-user": "git"
+ },
+ "run_list": [
+  "role[nodejs-webserver]"
+ ],
+ "stackful-node": {
+  "db-user": "node-web",
+  "app-name": "node-web",
+  "db-password": "VRyisb15r2Q15OZ",
+  "app-port": 3000,
+  "app-home": "/var/www/node-web"
+ }
+}

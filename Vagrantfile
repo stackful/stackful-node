@@ -16,6 +16,8 @@ Vagrant.configure("2") do |config|
 
 
   #config.vm.provision :shell, :path => "bootstrap.sh"
+  config.vm.provision :shell, :path => "prepare-stack.sh"
+
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
@@ -28,7 +30,7 @@ Vagrant.configure("2") do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  config.vm.network :private_network, ip: "10.100.0.1"
+  config.vm.network :private_network, ip: "10.100.0.2"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
