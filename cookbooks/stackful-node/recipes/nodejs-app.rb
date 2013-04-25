@@ -39,6 +39,11 @@ execute "install meteor" do
   not_if "which meteor"
 end
 
+execute "install meteorite" do
+  command "npm install meteorite -g"
+  not_if "which mrt"
+end
+
 execute "create app home" do
   command <<-EOCOMMAND
 mkdir -p '#{app_home}' && \
@@ -81,6 +86,7 @@ execute "npm install" do
   environment({
     "HOME" => node_user_home
   })
+  only_if { ::File.exists?(File.join(app_home, "package.json")) }
 end
 
 execute "stop node-web || true"
