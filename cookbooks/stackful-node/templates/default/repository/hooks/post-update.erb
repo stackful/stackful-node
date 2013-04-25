@@ -16,11 +16,7 @@ if branch != "master":
     print("Not deploying from branches other than 'master'. Exiting...")
     sys.exit()
 
-
 os.unsetenv("GIT_DIR")
-python_paths = os.getenv("PYTHONPATH", "").split(":")
-python_paths.append(params["deployer_home"])
-os.putenv("PYTHONPATH", ":".join(python_paths))
 
 deploy_cmd = "{deployer_home}/bin/deploy '{app_user}'".format(**params)
 run(deploy_cmd)
