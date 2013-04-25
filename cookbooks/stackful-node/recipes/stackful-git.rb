@@ -81,6 +81,9 @@ execute "update app-deployer" do
 git fetch -f origin #{deployer_branch} && \
 git reset --hard FETCH_HEAD
 EOCOMMAND
+
+  # don't update if deployer home symlinked (dev vagrant box)
+  not_if "test -L #{deployer_home}"
 end
 
 template "#{deploy_repo}/hooks/post-update" do
