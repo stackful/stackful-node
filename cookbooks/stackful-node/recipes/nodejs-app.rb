@@ -77,6 +77,7 @@ template upstart_config do
 end
 
 execute "demo app npm package update" do
+  command "npm install"
   user node_user
   group node_group
   cwd app_home
