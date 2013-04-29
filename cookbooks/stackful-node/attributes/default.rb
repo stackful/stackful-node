@@ -9,4 +9,4 @@ default['stackful-node']['group'] = 'nodejs'
 
 default['stackful-node']['db-user'] = 'node-web'
 default['stackful-node']['db-password'] = nil
-default['stackful-node']['demo-repo'] = 'demo-node-express-mongodb'
+default['stackful-node']['demo-repo'] = 'demo-meteor-telescope'
