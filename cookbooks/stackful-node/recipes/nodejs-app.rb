@@ -11,6 +11,9 @@ install_demo_marker = File.join(app_home, "install-demo")
 config_file = File.join("/etc", "stackful", "node.json")
 demo_repo = "demo-node-express-mongodb"
 upstart_config = "/etc/init/node-web.conf"
+git_settings = node["stackful-git"]
+deploy_user = git_settings["deploy-user"]
+deployer_home = git_settings["deployer-home"]
 #####################################################################
 
 group node_group
@@ -76,18 +79,13 @@ template upstart_config do
   mode "0600"
 end
 
-execute "demo app npm package update" do
-  command "npm install"
-  user node_user
-  group node_group
-  cwd app_home
+execute "deploy demo app" do
+  command "#{deployer_home}/bin/deploy #{node_user} --skip-update"
+  user deploy_user
+  group "stackful"
   # npm install is notoriously flakey, so retry up to 6 times
-  retries 6
-  retry_delay 10
-  environment({
-    "HOME" => node_user_home
-  })
-  only_if { ::File.exists?(File.join(app_home, "package.json")) }
+  #retries 6
+  #retry_delay 10
 end
 
 execute "stop node-web || true"
