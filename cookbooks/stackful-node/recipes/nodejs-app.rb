@@ -45,25 +45,25 @@ end
 execute "create app home" do
   command <<-EOCOMMAND
 mkdir -p '#{app_home}' && \
-touch '#{install_demo_marker}' && \
 chown -R #{node_user}:#{node_group} '#{app_home}'
 EOCOMMAND
 
+  notifies :run, "execute[demo app install]"
   not_if { ::File.exists?(app_home) }
 end
 
 execute "demo app install" do
+  action :nothing
   user node_user
   group node_group
   cwd "/tmp"
 
   command <<-EOCOMMAND
-rm '#{install_demo_marker}' && \
 git clone https://github.com/stackful/#{demo_repo}.git '#{app_home}' && \
-rm -rf '#{app_home}/.git' && \
-touch '#{install_demo_marker}'
+rm -rf '#{app_home}/.git'
 EOCOMMAND
   only_if { ::File.exists?(install_demo_marker) }
+  notifies :run, "execute[deploy demo app]"
 end
 
 template upstart_config do
@@ -74,13 +74,17 @@ template upstart_config do
 end
 
 execute "deploy demo app" do
+  action :nothing
   command "#{deployer_home}/bin/deploy #{node_user} --skip-update"
   user deploy_user
   group "stackful"
   # npm install is notoriously flakey, so retry up to 6 times
   #retries 6
   #retry_delay 10
+  notifies :restart, "service[#{app_name}]"
 end
 
-execute "stop node-web || true"
-execute "start node-web"
+service app_name do
+  action :nothing
+  provider Chef::Provider::Service::Upstart
+end
