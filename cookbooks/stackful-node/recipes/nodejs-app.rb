@@ -62,7 +62,6 @@ execute "demo app install" do
 git clone https://github.com/stackful/#{demo_repo}.git '#{app_home}' && \
 rm -rf '#{app_home}/.git'
 EOCOMMAND
-  only_if { ::File.exists?(install_demo_marker) }
   notifies :run, "execute[deploy demo app]"
 end
 
@@ -71,6 +70,8 @@ template upstart_config do
   owner "root"
   group "root"
   mode "0600"
+
+  notifies :restart, "service[#{app_name}]"
 end
 
 execute "deploy demo app" do
