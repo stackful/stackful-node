@@ -58,11 +58,10 @@ execute "demo app install" do
   cwd "/tmp"
 
   command <<-EOCOMMAND
-curl -L https://github.com/stackful/#{demo_repo}/archive/master.tar.gz | tar zx && \
-mkdir -p #{app_home} && \
-rsync -a #{demo_repo}-master/ '#{app_home}' && \
-rm -rf #{demo_repo}-master && \
-rm '#{install_demo_marker}'
+rm '#{install_demo_marker}' && \
+git clone https://github.com/stackful/#{demo_repo}.git '#{app_home}' && \
+rm -rf '#{app_home}/.git' && \
+touch '#{install_demo_marker}'
 EOCOMMAND
   only_if { ::File.exists?(install_demo_marker) }
 end
