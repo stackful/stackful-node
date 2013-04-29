@@ -37,11 +37,6 @@ execute "secure node config" do
   command "chgrp stackful '#{config_file}' && chmod 660 '#{config_file}'"
 end
 
-execute "install meteor" do
-  command "curl https://install.meteor.com | /bin/sh"
-  not_if "which meteor"
-end
-
 execute "install meteorite" do
   command "npm install meteorite -g"
   not_if "which mrt"
