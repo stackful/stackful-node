@@ -9,7 +9,7 @@ app_home = settings["app-home"]
 app_name = settings["app-name"]
 install_demo_marker = File.join(app_home, "install-demo")
 config_file = File.join("/etc", "stackful", "node.json")
-demo_repo = "demo-node-express-mongodb"
+demo_repo = settings["demo-repo"]
 upstart_config = "/etc/init/node-web.conf"
 git_settings = node["stackful-git"]
 deploy_user = git_settings["deploy-user"]
@@ -65,7 +65,7 @@ execute "demo app install" do
   command <<-EOCOMMAND
 curl -L https://github.com/stackful/#{demo_repo}/archive/master.tar.gz | tar zx && \
 mkdir -p #{app_home} && \
-mv #{demo_repo}-master/* #{app_home} && \
+rsync -a #{demo_repo}-master/ '#{app_home}' && \
 rm -rf #{demo_repo}-master && \
 rm '#{install_demo_marker}'
 EOCOMMAND
