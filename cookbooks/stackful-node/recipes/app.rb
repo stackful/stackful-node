@@ -2,34 +2,35 @@
 # Settings
 #####################################################################
 settings = node["stackful-node"]
-node_user = settings["user"]
-node_group = settings["group"]
-node_user_home = "/home/#{node_user}"
+app_type = "node"
+app_user = settings["user"]
+app_group = settings["group"]
+app_user_home = "/home/#{app_user}"
 app_home = settings["app-home"]
 app_name = settings["app-name"]
 install_demo_marker = File.join(app_home, "install-demo")
 config_file = File.join("/etc", "stackful", "node.json")
 demo_repo = settings["demo-repo"]
-upstart_config = "/etc/init/node-web.conf"
+upstart_config = "/etc/init/#{app_name}.conf"
 git_settings = node["stackful-git"]
 deploy_user = git_settings["deploy-user"]
 deployer_home = git_settings["deployer-home"]
 #####################################################################
 
-group node_group
-user node_user do
-  gid node_group
-  home node_user_home
+group app_group
+user app_user do
+  gid app_group
+  home app_user_home
 end
 
-directory node_user_home do
-  owner node_user
-  group node_group
+directory app_user_home do
+  owner app_user
+  group app_group
   mode 00755
 end
 
 group "stackful" do
-  members [node_user]
+  members [app_user]
   append true
 end
 
@@ -37,15 +38,10 @@ execute "secure node config" do
   command "chgrp stackful '#{config_file}' && chmod 660 '#{config_file}'"
 end
 
-execute "install meteorite" do
-  command "npm install meteorite -g"
-  not_if "which mrt"
-end
-
 execute "create app home" do
   command <<-EOCOMMAND
 mkdir -p '#{app_home}' && \
-chown -R #{node_user}:#{node_group} '#{app_home}'
+chown -R #{app_user}:#{app_group} '#{app_home}'
 EOCOMMAND
 
   notifies :run, "execute[demo app install]"
@@ -54,8 +50,8 @@ end
 
 execute "demo app install" do
   action :nothing
-  user node_user
-  group node_group
+  user app_user
+  group app_group
   cwd "/tmp"
 
   command <<-EOCOMMAND
@@ -66,7 +62,7 @@ EOCOMMAND
 end
 
 template upstart_config do
-  source "upstart/node-web.conf.erb"
+  source "upstart/#{app_type}-web.conf.erb"
   owner "root"
   group "root"
   mode "0600"
@@ -76,7 +72,7 @@ end
 
 execute "deploy demo app" do
   action :nothing
-  command "#{deployer_home}/bin/deploy #{node_user} --skip-update"
+  command "#{deployer_home}/bin/deploy #{app_user} --skip-update"
   user deploy_user
   group "stackful"
   # npm install is notoriously flakey, so retry up to 6 times
