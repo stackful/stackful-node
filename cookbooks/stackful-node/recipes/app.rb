@@ -2,7 +2,6 @@
 # Settings
 #####################################################################
 settings = node["stackful-node"]
-app_type = "node"
 app_user = settings["user"]
 app_group = settings["group"]
 app_user_home = "/home/#{app_user}"
@@ -62,7 +61,7 @@ EOCOMMAND
 end
 
 template upstart_config do
-  source "upstart/#{app_type}-web.conf.erb"
+  source "upstart/#{app_name}.conf.erb"
   owner "root"
   group "root"
   mode "0600"
