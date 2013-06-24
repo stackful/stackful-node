@@ -60,7 +60,11 @@ if not os_supported:
 
 message("Installing prerequisite packages...")
 run("DEBIAN_FRONTEND=noninteractive apt-get update --yes")
-run("DEBIAN_FRONTEND=noninteractive apt-get install --yes curl dialog git")
+# base dependencies:
+# curl - fetch executable scripts
+# git - fetch stack cookbooks
+# libssl1.0.0 - latest SSL CA certs
+run("DEBIAN_FRONTEND=noninteractive apt-get install --yes curl dialog git libssl1.0.0")
 
 
 message("Fetching stack files from {}/{} ...".format(stack_repo, stack_branch))
